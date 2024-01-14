@@ -16,11 +16,11 @@ public class SmileyEmojiView extends SurfaceView implements SurfaceHolder.Callba
     Path path;
     private SurfaceHolder holder;
     private boolean isAnimating;
-    private int controlY;
-    private int controlX;
+    private int controlY = 150;
     private Paint mouthBlackPaint;
     private boolean isHappy = true;
     private AnimationListener listener;
+    private int canvasHeight;
 
     public SmileyEmojiView(Context context) {
         super(context);
@@ -37,35 +37,7 @@ public class SmileyEmojiView extends SurfaceView implements SurfaceHolder.Callba
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        Canvas canvas = holder.lockCanvas();
-        if (canvas != null) {
-            controlX = canvas.getWidth() / 2;
-            controlY = canvas.getHeight() / 4 + 150;
-            mouthBlackPaint = new Paint();
-            mouthBlackPaint.setStyle(Paint.Style.STROKE);
-            mouthBlackPaint.setStrokeWidth(5);
-            // Set the canvas background to white
-            canvas.drawColor(Color.WHITE);
-
-            // Draw the big yellow circle
-            Paint yellowPaint = new Paint();
-            yellowPaint.setColor(Color.YELLOW);
-            canvas.drawCircle(canvas.getWidth() / 2, canvas.getHeight() / 4, 200, yellowPaint);
-
-            // Draw the black eyes
-            Paint blackPaint = new Paint();
-            blackPaint.setColor(Color.BLACK);
-            canvas.drawCircle(canvas.getWidth() / 2 - 50, canvas.getHeight() / 4 - 50, 25, blackPaint);
-            canvas.drawCircle(canvas.getWidth() / 2 + 50, canvas.getHeight() / 4 - 50, 25, blackPaint);
-
-            // Draw the mouth as an arc
-            path = new Path();
-            path.moveTo(canvas.getWidth() / 2 - 100, canvas.getHeight() / 4 + 50);
-            path.quadTo(canvas.getWidth() / 2, canvas.getHeight() / 4 + 150, canvas.getWidth() / 2 + 100, canvas.getHeight() / 4 + 50);
-            canvas.drawPath(path, mouthBlackPaint);
-
-            holder.unlockCanvasAndPost(canvas);
-        }
+        drawOnCanvas();
     }
 
     @Override
@@ -103,14 +75,34 @@ public class SmileyEmojiView extends SurfaceView implements SurfaceHolder.Callba
     private void drawOnCanvas() {
         Canvas canvas = holder.lockCanvas();
         if (canvas != null) {
-            path.reset(); // Clear the existing path
+            if(canvasHeight == 0) canvasHeight = canvas.getHeight();
+
+            // Set the canvas background to white
+            canvas.drawColor(Color.WHITE);
+
+            // Draw the big yellow circle
+            Paint yellowPaint = new Paint();
+            yellowPaint.setColor(Color.YELLOW);
+            canvas.drawCircle(canvas.getWidth() / 2, canvas.getHeight() / 4, 200, yellowPaint);
+
+            // Draw the black eyes
+            Paint blackPaint = new Paint();
+            blackPaint.setColor(Color.BLACK);
+            canvas.drawCircle(canvas.getWidth() / 2 - 50, canvas.getHeight() / 4 - 50, 25, blackPaint);
+            canvas.drawCircle(canvas.getWidth() / 2 + 50, canvas.getHeight() / 4 - 50, 25, blackPaint);
+
+            // Draw the mouth as an arc
+            blackPaint.setStyle(Paint.Style.STROKE);
+            blackPaint.setStrokeWidth(5);
+            path = new Path();
             path.moveTo(canvas.getWidth() / 2 - 100, canvas.getHeight() / 4 + 50);
-            path.quadTo(controlX, controlY, canvas.getWidth() / 2 + 100, canvas.getHeight() / 4 + 50);
-            canvas.drawPath(path, mouthBlackPaint); // Draw the updated path
-            if ((!isHappy && (controlY + 5) > (canvas.getHeight() / 4 + 150)) ||
-                    (isHappy && (controlY - 5) < (canvas.getHeight() / 4))) {
+            path.quadTo(canvas.getWidth() / 2, canvas.getHeight() / 4 + controlY, canvas.getWidth() / 2 + 100, canvas.getHeight() / 4 + 50);
+            canvas.drawPath(path, blackPaint);
+            if (!isHappy && controlY == 150 ||
+                    (isHappy && controlY  == 0)) {
                 isAnimating = false;
             }
+
             holder.unlockCanvasAndPost(canvas);
         }
     }
