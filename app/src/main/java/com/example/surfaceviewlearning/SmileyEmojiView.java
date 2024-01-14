@@ -6,10 +6,12 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
+import android.os.Looper;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.os.Handler;
 
 public class SmileyEmojiView extends SurfaceView implements SurfaceHolder.Callback {
     private static final String TAG = "SmileyEmojiView";
@@ -21,6 +23,7 @@ public class SmileyEmojiView extends SurfaceView implements SurfaceHolder.Callba
     private boolean isHappy = true;
     private AnimationListener listener;
     private int canvasHeight;
+    private Handler handler;
 
     public SmileyEmojiView(Context context) {
         super(context);
@@ -66,8 +69,13 @@ public class SmileyEmojiView extends SurfaceView implements SurfaceHolder.Callba
                     }
                 }
                 isHappy = !isHappy;
-                if (listener != null)
-                    listener.onAnimationEnd();
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (listener != null)
+                            listener.onAnimationEnd();
+                    }
+                });
             }
         }).start();
     }
@@ -112,8 +120,9 @@ public class SmileyEmojiView extends SurfaceView implements SurfaceHolder.Callba
         controlY = isHappy ? controlY - 5 : controlY + 5;
     }
 
-    public void setAnimationListener(AnimationListener listener) {
+    public void registerAnimationListener(AnimationListener listener, Handler handler) {
         this.listener = listener;
+        this.handler = handler;
     }
 
     public interface AnimationListener {
