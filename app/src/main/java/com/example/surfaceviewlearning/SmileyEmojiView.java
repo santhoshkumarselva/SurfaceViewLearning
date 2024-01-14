@@ -103,11 +103,10 @@ public class SmileyEmojiView extends SurfaceView implements SurfaceHolder.Callba
     private void drawOnCanvas() {
         Canvas canvas = holder.lockCanvas();
         if (canvas != null) {
-            canvas.drawColor(Color.WHITE); // Clear the canvas
-            path.reset();
+            path.reset(); // Clear the existing path
             path.moveTo(canvas.getWidth() / 2 - 100, canvas.getHeight() / 4 + 50);
             path.quadTo(controlX, controlY, canvas.getWidth() / 2 + 100, canvas.getHeight() / 4 + 50);
-            canvas.drawPath(path, mouthBlackPaint);
+            canvas.drawPath(path, mouthBlackPaint); // Draw the updated path
             if ((!isHappy && (controlY + 5) > (canvas.getHeight() / 4 + 150)) ||
                     (isHappy && (controlY - 5) < (canvas.getHeight() / 4))) {
                 isAnimating = false;
